@@ -125,15 +125,14 @@
                     return;
                 }
 
-                fetch('{{ route('calculator.evaluate') }}', {
-                        method: 'POST',
+                // Changed to use GET method with URL parameters
+                const url = `{{ route('calculator.evaluate') }}?expression=${encodeURIComponent(expression)}`;
+
+                fetch(url, {
+                        method: 'GET',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            expression: expression
-                        })
+                            'Accept': 'application/json'
+                        }
                     })
                     .then(response => response.json())
                     .then(data => {

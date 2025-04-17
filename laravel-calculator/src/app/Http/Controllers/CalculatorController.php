@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/CalculatorController.php
 
 namespace App\Http\Controllers;
 
@@ -7,7 +8,7 @@ use Illuminate\Http\Request;
 
 class CalculatorController extends Controller
 {
-    private $calculatorService;
+    protected $calculatorService;
 
     public function __construct(CalculatorService $calculatorService)
     {
@@ -19,24 +20,38 @@ class CalculatorController extends Controller
         return view('calculator.index');
     }
 
-    public function calculate(Request $request)
+    // Updated to handle GET requests
+    public function evaluate(Request $request)
     {
-        $expression = $request->input('expression');
+        $expression = $request->query('expression');
+
+        if (empty($expression)) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Expression is required'
+            ]);
+        }
 
         try {
             $result = $this->calculatorService->evaluate($expression);
-            $expressionTree = $this->calculatorService->getExpressionTree();
+
+            if ($result === null) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Invalid mathematical expression'
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
                 'result' => $result,
-                'expressionTree' => $expressionTree
+                'expressionTree' => $this->calculatorService->getExpressionTree()
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage()
-            ], 422);
+            ]);
         }
     }
 }
