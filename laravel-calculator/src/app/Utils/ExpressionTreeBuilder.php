@@ -8,7 +8,9 @@ class ExpressionTreeBuilder
     {
         $expression = trim($expression);
 
+
         if ($this->isWrappedInParentheses($expression)) {
+            print_r("\n\nWrapped\n\n $expression");
             return $this->build(substr($expression, 1, -1));
         }
 
@@ -75,7 +77,7 @@ class ExpressionTreeBuilder
                 } elseif (preg_match("/^[\(\[\{]$/", $char)) {
                     $openParentheses--;
                 } elseif ($openParentheses === 0 && in_array($char, $operators)) {
-                    if (($char === '+' || $char === '-') && ($i === 0 || in_array($expression[$i - 1], ['+', '-', '*', '/', '(', '^']))) {
+                    if (($char === '+' || $char === '-') && ($i === 0 || in_array($expression[$i - 1], ['+', '-', '*', '/', '(', '[', '{', '^']))) {
                         continue;
                     }
                     return $i;
@@ -85,9 +87,9 @@ class ExpressionTreeBuilder
             for ($i = 0; $i < strlen($expression); $i++) {
                 $char = $expression[$i];
 
-                if ($char === '(') {
+                if (preg_match("/^[\(\[\{]$/", $char)) {
                     $openParentheses++;
-                } elseif ($char === ')') {
+                } elseif (preg_match("/^[\)\]\}]$/", $char)) {
                     $openParentheses--;
                 } elseif ($openParentheses === 0 && in_array($char, $operators)) {
                     return $i;
@@ -100,14 +102,38 @@ class ExpressionTreeBuilder
 
     private function isWrappedInParentheses(string $expression): bool
     {
-        $pattern = '/^
-            (?:                             
-                (\((?:[^(){}\[\]]|(?R))*\))  
-              | (\[(?:[^(){}\[\]]|(?R))*\])  
-              | (\{(?:[^(){}\[\]]|(?R))*\})  
-            )
-        $/x';
+        $pattern = '/^(?x)                           
+    (?(DEFINE)                            
+        (?<BAL>                           
+            \(                            
+               (?: [^(){}\[\]]           
+                | (?&BAL)                 
+               )*
+            \)                            
+          | \[                            
+               (?: [^(){}\[\]] | (?&BAL) )*
+            \]
+          | \{                            
+               (?: [^(){}\[\]] | (?&BAL) )*
+            \}
+        )
+    )
+    (?&BAL)                                
+$/x';
 
         return preg_match($pattern, $expression) === 1;
+    }
+
+    public function displayTree(array $node, int $depth = 0): string
+    {
+        $pad = str_repeat('  ', $depth);
+        if (isset($node['value'])) {
+            return $pad . 'Value: ' . $node['value'] . PHP_EOL;
+        }
+
+        $out  = $pad . 'Operator: ' . $node['operator'] . PHP_EOL;
+        $out .= $this->displayTree($node['left'],  $depth + 1);
+        $out .= $this->displayTree($node['right'], $depth + 1);
+        return $out;
     }
 }
