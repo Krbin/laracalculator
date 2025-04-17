@@ -125,7 +125,7 @@
                     return;
                 }
 
-                fetch('{{ route('calculator.calculate') }}', {
+                fetch('{{ route('calculator.evaluate') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

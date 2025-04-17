@@ -2,10 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\CalculatorController::class, 'index'])->name('calculator');
 
-Route::get('/calculator', [App\Http\Controllers\CalculatorController::class, 'index'])->name('calculator');
-
-Route::post('/calculator/calculate', [App\Http\Controllers\CalculatorController::class, 'calculate'])->name('calculator.calculate');
+Route::post('/calculator/evaluate', [App\Http\Controllers\CalculatorController::class, 'evaluate'])->name('calculator.evaluate');
