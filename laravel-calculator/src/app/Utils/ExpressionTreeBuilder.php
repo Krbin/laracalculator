@@ -100,23 +100,14 @@ class ExpressionTreeBuilder
 
     private function isWrappedInParentheses(string $expression): bool
     {
-        if (strlen($expression) < 2 || $expression[0] !== '(' || $expression[strlen($expression) - 1] !== ')') {
-            return false;
-        }
+        $pattern = '/^
+            (?:                             
+                (\((?:[^(){}\[\]]|(?R))*\))  
+              | (\[(?:[^(){}\[\]]|(?R))*\])  
+              | (\{(?:[^(){}\[\]]|(?R))*\})  
+            )
+        $/x';
 
-        $openCount = 0;
-        for ($i = 0; $i < strlen($expression) - 1; $i++) {
-            if ($expression[$i] === '(') {
-                $openCount++;
-            } elseif ($expression[$i] === ')') {
-                $openCount--;
-            }
-
-            if ($openCount === 0 && $i < strlen($expression) - 1) {
-                return false;
-            }
-        }
-
-        return true;
+        return preg_match($pattern, $expression) === 1;
     }
 }
