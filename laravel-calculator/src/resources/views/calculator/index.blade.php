@@ -16,7 +16,7 @@
                                 <button class="btn btn-secondary" id="clear-btn">Clear</button>
                             </div>
                             <small class="form-text text-muted">
-                                Supports: +, -, *, /, ^ (power), and parentheses ()
+                                Supports: +, -, *, / and ^ (power) | parentheses () in progress
                             </small>
                         </div>
 
