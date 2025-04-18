@@ -4,11 +4,19 @@ namespace App\Utils;
 
 class ExpressionTreeBuilder
 {
+    private const TOLERANCE = 1e-15;
     public function build(string $expression): array
     {
         $expression = trim($expression);
 
-        // handle unary functions sin, cos, tan, log, ln
+        $expression = str_replace('pi', 'π', $expression);
+
+        if (strtolower($expression) === 'π') {
+            return ['value' => M_PI];
+        }
+        if (strtolower($expression) === 'e') {
+            return ['value' => M_E];
+        }
 
         $function_pattern = '/^(?x)
         (?(DEFINE)
@@ -62,9 +70,9 @@ class ExpressionTreeBuilder
         if (array_key_exists('right', $node) && $node['right'] === null) {
             $arg = $this->evaluate($node['left']);
             return match ($node['operator']) {
-                'sin' => sin($arg),
-                'cos' => cos($arg),
-                'tan' => tan($arg),
+                'sin' => abs(sin($arg)) < self::TOLERANCE ? 0 : sin($arg),
+                'cos' => abs(cos($arg) - round(cos($arg))) < self::TOLERANCE ? round(cos($arg)) : cos($arg),
+                'tan' => abs(tan($arg) - round(tan($arg))) < self::TOLERANCE ? round(tan($arg)) : tan($arg),
                 'ln'  => log($arg),
                 'log' => log10($arg),
                 default => throw new \Exception('Unknown function: ' . $node['operator']),
