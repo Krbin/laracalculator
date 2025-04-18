@@ -1,9 +1,8 @@
 <?php
-// routes/web.php
 
-use App\Http\Controllers\CalculatorController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalculatorController;
 
-Route::get('/', [CalculatorController::class, 'index'])->name('calculator');
+Route::get('/', [CalculatorController::class, 'index'])->name('calculator.index');
 
-Route::get('/evaluate', [CalculatorController::class, 'evaluate'])->name('calculator.evaluate');
+Route::get('/calculate', [CalculatorController::class, 'calculate'])->name('calculator.calculate');
