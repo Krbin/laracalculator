@@ -19,7 +19,8 @@
                                     <a href="{{ route('calculator.index') }}" class="btn btn-secondary">Clear</a>
                                 </div>
                                 <small class="form-text text-muted">
-                                    Supports: +, -, *, /, ^ (power), and parentheses ()
+                                    Supports: +, -, *, /, ^ (power), parentheses (), and functions <code>sin()</code>,
+                                    <code>cos()</code>, <code>tan()</code>, <code>ln()</code>, <code>log()</code>
                                 </small>
                             </div>
                         </form>
